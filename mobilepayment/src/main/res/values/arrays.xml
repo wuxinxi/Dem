@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="paytype">
+        <item>全部</item>
+        <item>微信支付</item>
+        <item>支付宝支付</item>
+        <item>QQ支付</item>
+    </string-array>
+
+    <string-array name="timeRange">
+        <item>今天</item>
+        <item>昨天</item>
+        <item>本周</item>
+        <item>上周</item>
+        <item>本月</item>
+        <item>上月</item>
+        <item>请选择时间范围</item>
+    </string-array>
+</resources>

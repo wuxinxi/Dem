@@ -1,0 +1,17 @@
+MainActivity                     主界面                                        1
+
+MainFragment                     主界面--fragment                              1.1
+
+ManagerFragment                  管理主界面
+
+SettingFragment                  设置主界面
+
+
+
+PaymentActivity                  扫码/二维码支付界面                             4
+
+PlaceorderActivity               下单确认界面                                   3
+
+ReceiptActivity                  金额输入页--开始下单                            2
+
+PyaSettingActivity               支付设置

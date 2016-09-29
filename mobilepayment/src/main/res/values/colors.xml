@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorWri">#FFFFFF</color>
+    <color name="colorBlack">#000000</color>
+
+    <color name="colorClearNormal">#FFA600</color>
+    <color name="colorClear">#EAA224</color>
+
+    <color name="colorLgray">#444A52</color>
+    <!--深灰-->
+    <color name="colorgray">#3B424B</color>
+    <!--次灰-->
+    <color name="colorSgray">#E8E8E8</color>
+    <!--浅灰-->
+    <color name="colorSsgray">#F0F0F0</color>
+    <!--浅灰-->
+
+    <color name="textColor_selected">#ffed6c00</color>
+    <color name="textColor_unselected">#ff000000</color>
+    <color name="scan_corner_color">#0effc2</color>
+
+    <color name="color_num_normal">#FCFCFC</color>
+    <color name="color_num">#E2E2E2</color>
+
+    <color name="color_clear_normal">#FE8700</color>
+    <color name="color_clear">#F07F00</color>
+
+    <color name="color_record_ls">#7D7D7D</color>
+    <color name="color_record_s">#BABABA</color>
+</resources>

@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "G:\\AS-PROGECT\\GitPayment\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\week.xml",
+        "source": "G:\\AS-PROGECT\\GitPayment\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\week.xml"
+    },
+    {
+        "merged": "G:\\AS-PROGECT\\SzxiaobingPayment\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\week.xml",
+        "source": "G:\\AS-PROGECT\\SzxiaobingPayment\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\week.xml"
+    },
+    {
+        "merged": "G:\\AS-PROGECT\\SzxiaobingPayment\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\month.xml",
+        "source": "G:\\AS-PROGECT\\SzxiaobingPayment\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\month.xml"
+    },
+    {
+        "merged": "G:\\AS-PROGECT\\GitPayment\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\month.xml",
+        "source": "G:\\AS-PROGECT\\GitPayment\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\month.xml"
+    }
+]
