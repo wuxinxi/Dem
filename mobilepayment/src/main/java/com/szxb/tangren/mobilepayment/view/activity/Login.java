@@ -21,7 +21,9 @@ import com.szxb.tangren.mobilepayment.dialog.WaitDialog;
 import com.szxb.tangren.mobilepayment.presenter.LoginCompl;
 import com.szxb.tangren.mobilepayment.presenter.LoginPresenter;
 import com.szxb.tangren.mobilepayment.utils.Sputils;
+import com.szxb.tangren.mobilepayment.utils.Utils;
 import com.szxb.tangren.mobilepayment.view.view.ResultView;
+import com.yolanda.nohttp.Logger;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -85,6 +87,8 @@ public class Login extends AppCompatActivity implements ResultView {
         businessAccounts.setText((String) spUtils.get(this, "businessAccounts", ""));
         user.setText((String) spUtils.get(this, "user", ""));
         psw.setText((String) spUtils.get(this, "psw", ""));
+
+        Logger.e("Thrad count:" + Thread.activeCount());
     }
 
     @OnClick({R.id.isVisible, R.id.login, R.id.rememberPsw})
@@ -104,8 +108,11 @@ public class Login extends AppCompatActivity implements ResultView {
                 }
                 break;
             case R.id.login:
-                dialog.show();
-                presenter.doLogin(Login.this, businessAccounts, user, psw, isSelector);
+                if (Utils.checkNetwork(Login.this)) {
+                    dialog.show();
+                    presenter.doLogin(Login.this, businessAccounts, user, psw, isSelector);
+                } else
+                    Toast.makeText(Login.this, "请检查网络！", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.rememberPsw:
                 isSelector = rememberPsw.isChecked();

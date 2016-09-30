@@ -3,7 +3,6 @@ package com.szxb.tangren.mobilepayment.presenter;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.szxb.tangren.mobilepayment.application.CustiomApplication;
@@ -57,20 +56,8 @@ public class PaymentCompl implements PaymentPresenter {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 0:
-                    SortedMap<Object, Object> map = new TreeMap<Object, Object>();
-                    map.put("payType", msg.obj.toString());
-                    map.put("cashier", Utils.fenToYuan(total_fee));
-                    String xml = XMlUtils.changeMapToXml(map);
-                    Log.d("XML", xml);
-
-                    view.onResult(100, xml);
-                    break;
                 case 1:
                     view.onResult(400, msg.obj.toString());
-                    break;
-                case 2:
-                    view.onResult(404, "Fail");
                     break;
                 default:
 
@@ -107,7 +94,7 @@ public class PaymentCompl implements PaymentPresenter {
         @Override
         public void success(int what, Response<String> response) {
             Logger.d(response.get());
-            Message message = Message.obtain();
+
             Map<String, String> xml = XMlUtils.decodeXml(response.get());
             String status = xml.get("status");
             // 当满足下面的条件时说明已经支付成功
@@ -159,7 +146,7 @@ public class PaymentCompl implements PaymentPresenter {
                             @Override
                             public void run() {
 
-                                while (isPay == 0 && polling_times <20) {
+                                while (isPay == 0 && polling_times < 30) {
 
                                     try {
 
@@ -209,6 +196,7 @@ public class PaymentCompl implements PaymentPresenter {
         request.setCacheMode(CacheMode.ONLY_REQUEST_NETWORK);
         request.setDefineRequestBodyForXML(Parmas.getQuery(context, out_trade_no));
         Response<String> response = NoHttp.startRequestSync(request);
+        Message message = Message.obtain();
         if (response.isSucceed()) {
 
             j++;
@@ -230,20 +218,6 @@ public class PaymentCompl implements PaymentPresenter {
 
                         String payType = "";
 
-//                        try {
-//
-//                            if (trade_type.equals("pay.weixin.native") || trade_type.equals("pay.weixin.micropay"))
-//                                manager.addRecord(out_trade_no, time_end, transaction_id, Utils.fenToYuan(total_fee), "微信支付", Utils.getDate());
-//                            else if (trade_type.equals("pay.alipay.native") || trade_type.equals("pay.alipay.micropay"))
-//                                manager.addRecord(out_trade_no, time_end, transaction_id, Utils.fenToYuan(total_fee), "支付宝支付", Utils.getDate());
-//                            else if (trade_type.equals("pay.qq.native") || trade_type.equals("pay.qq.micropay"))
-//                                manager.addRecord(out_trade_no, time_end, transaction_id, Utils.fenToYuan(total_fee), "QQ支付", Utils.getDate());
-//
-//                        } catch (Exception e) {
-//                            Logger.d("交易记录存储失败，失败详情：" + e.toString());
-//                        }
-
-
                         if (trade_type.equals("pay.weixin.native") || trade_type.equals("pay.weixin.micropay"))
                             payType = "微信支付";
                         else if (trade_type.equals("pay.alipay.micropay") || trade_type.equals("pay.alipay.native"))
@@ -257,21 +231,24 @@ public class PaymentCompl implements PaymentPresenter {
                         map.put("cashier", Utils.fenToYuan(total_fee));
                         String result = XMlUtils.changeMapToXml(map);
 
-
                         view.onResult(100, result);
 
                     } else if (xml.get("trade_state").equals("USERPAYING")) {
                         isPay = 0;
                     } else if (xml.get("trade_state").equals("REVOKED")) {
-                        isPay = 0;
+                        isPay = 1;
+                        message.what = 1;
+                        message.obj = "订单已撤销";
+                        handler.sendMessage(message);
                     }
                 }
             }
 
             Logger.d(response.get());
         } else {
-            view.onResult(400, "网络异常,请检查网络！");
-//            handler.sendEmptyMessage(2);
+            message.what = 1;
+            message.obj = "网络异常,请检查网络！";
+            handler.sendMessage(message);
         }
     }
 

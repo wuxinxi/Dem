@@ -3,7 +3,6 @@ package com.szxb.tangren.mobilepayment.presenter;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.szxb.tangren.mobilepayment.application.CustiomApplication;
 import com.szxb.tangren.mobilepayment.db.OrderDBManager;
@@ -34,7 +33,7 @@ public class MainSweepCompl implements MainSweepPresenter {
 
     private static MainSweepView view;
 
-    private int polling_times = 0;// 轮询次数
+    private Integer polling_times = 0;// 轮询次数
 
     public int isPay = 0;// 是否已经完成支付
 
@@ -61,20 +60,10 @@ public class MainSweepCompl implements MainSweepPresenter {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 0:
-                    SortedMap<Object, Object> map = new TreeMap<Object, Object>();
-                    map.put("payType", msg.obj.toString());
-                    map.put("cashier", Utils.fenToYuan(total_fee));
-                    String xml = XMlUtils.changeMapToXml(map);
-                    Log.d("XML", xml);
-                    view.onResult(100, xml);
-                    break;
                 case 1:
                     view.onResult(400, msg.obj.toString());
                     break;
-                case 2:
-                    view.onResult(404, "Fail");
-                    break;
+
             }
         }
     };
@@ -99,15 +88,12 @@ public class MainSweepCompl implements MainSweepPresenter {
     HttpListener<String> mainSweptCallBack = new HttpListener<String>() {
         @Override
         public void success(int what, Response<String> response) {
-            Message message = Message.obtain();
 
             Logger.d(response.get());
             Map<String, String> xml = XMlUtils.decodeXml(response.get());
             int status = Integer.valueOf(xml.get("status"));
             if (status == 400) {
-                message.what = 1;
-                message.obj = xml.get("message");
-                handler.sendMessage(message);
+                view.onResult(400, result);
             } else if (status == 0) {
                 int result_code = Integer.valueOf(xml.get("result_code"));
                 if (result_code == 0) {
@@ -122,7 +108,7 @@ public class MainSweepCompl implements MainSweepPresenter {
                         @Override
                         public void run() {
                             CustiomApplication customApplication = (CustiomApplication) context.getApplicationContext();
-                            while (isPay == 0 && polling_times < 20 && customApplication.getIsshowDown() == 0) {
+                            while (resultPay()) {
 
                                 try {
 
@@ -131,6 +117,8 @@ public class MainSweepCompl implements MainSweepPresenter {
                                     polling_times++;
 
                                     requestQuery(context, out_trade_no);
+
+                                    Logger.d("Thread count:" + Thread.activeCount() + "");
 
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -155,19 +143,32 @@ public class MainSweepCompl implements MainSweepPresenter {
 
     int j = 0;
 
+
+    private boolean resultPay() {
+        CustiomApplication customApplication = (CustiomApplication) context.getApplicationContext();
+        if (isPay == 1) {
+            return false;
+        } else if (polling_times > 30) {
+            return false;
+        } else if (customApplication.getIsshowDown() == 1) {
+            return false;
+        }
+        return true;
+    }
+
+
     //轮训订单(同步轮训)
     private void requestQuery(Context context, String out_trade_no) {
         Request<String> request = NoHttp.createStringRequest(Config.payUrl, RequestMethod.POST);
         request.setCacheMode(CacheMode.ONLY_REQUEST_NETWORK);
         request.setDefineRequestBodyForXML(Parmas.getQuery(context, out_trade_no));
         Response<String> response = NoHttp.startRequestSync(request);
+        Message message = Message.obtain();
         if (response.isSucceed()) {
-
             j++;
-
             System.out.println("j=" + j);
             CustiomApplication customApplication = (CustiomApplication) context.getApplicationContext();
-            Logger.d("customApplication:"+customApplication.getIsshowDown());
+            Logger.d("customApplication:" + customApplication.getIsshowDown());
             Map<String, String> xml = XMlUtils.decodeXml(response.get());
             int status = Integer.valueOf(xml.get("status"));
             if (status == 0) {
@@ -202,18 +203,41 @@ public class MainSweepCompl implements MainSweepPresenter {
 
                         view.onResult(100, result);
 
-                    } else if (xml.get("trade_state").equals("USERPAYING")) {
-                        isPay = 0;
-                    } else if (xml.get("trade_state").equals("REVOKED")) {
-                        isPay = 0;
+                    } else if (xml.get("trade_state").equals("USERPAYING")) {//用户正在付款
+                        if (polling_times == 31) {
+                            message.what = 1;
+                            message.obj = "请重新下单";
+                            handler.sendMessage(message);
+                        } else
+                            isPay = 0;
+                    } else if (xml.get("trade_state").equals("REVOKED")) {//订单已撤销
+                        isPay = 1;
+                        message.what = 1;
+                        message.obj = "订单已撤销";
+                        handler.sendMessage(message);
+                    } else if (xml.get("trade_state").equals("NOTPAY")) {//未付款
+                        if (polling_times == 31) {
+                            message.what = 1;
+                            message.obj = "请重新下单";
+                            handler.sendMessage(message);
+                        } else
+                            isPay = 0;
                     }
+                } else {
+                    message.what = 1;
+                    message.obj = response.get();
+                    handler.sendMessage(message);
                 }
             }
 
             Logger.d(response.get());
         } else {
-            view.onResult(400, "网络异常,请检查网络！");
+            //冲正
+            message.what = 1;
+            message.obj = "网络异常,请检查网络！";
+            handler.sendMessage(message);
         }
     }
+
 
 }

@@ -27,6 +27,7 @@ import com.szxb.tangren.mobilepayment.utils.Utils;
 import com.szxb.tangren.mobilepayment.utils.singutils.XMlUtils;
 import com.szxb.tangren.mobilepayment.view.view.MainSweepView;
 import com.szxb.tangren.mobilepayment.view.view.PaymentView;
+import com.yolanda.nohttp.Logger;
 
 import java.util.Map;
 
@@ -101,6 +102,8 @@ public class MainSweepActivity extends AppCompatActivity implements MainSweepVie
             service = Config.aliService;
         else if (payType.equals("QQ"))
             service = Config.tenService;
+
+        Logger.e("Thrad count:" + Thread.activeCount());
 
         presenter.doMainSweepPay(this, payAnount, out_trade_no, "商品", service);
 
@@ -178,10 +181,6 @@ public class MainSweepActivity extends AppCompatActivity implements MainSweepVie
             startActivity(intent);
             finish();
             overridePendingTransition(R.anim.base_slide_right_in, R.anim.base_slide_remain);
-        } else if (code == 400) {
-            Toast.makeText(MainSweepActivity.this, result, Toast.LENGTH_LONG).show();
-            finish();
-            overridePendingTransition(0, R.anim.base_slide_right_out);
         } else if (code == 200) {
             Toast.makeText(MainSweepActivity.this, result, Toast.LENGTH_LONG).show();
         } else if (code == 300) {

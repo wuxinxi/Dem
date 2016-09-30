@@ -3,6 +3,7 @@ package com.szxb.tangren.mobilepayment.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.zxing.BarcodeFormat;
@@ -166,5 +167,18 @@ public class Utils {
         return dateString;
     }
 
+
+    //检查是否有网络
+    public static boolean checkNetwork(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context
+                .getSystemService(context.CONNECTIVITY_SERVICE);
+        boolean wifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                .isConnectedOrConnecting();
+        boolean internet = manager.getNetworkInfo(
+                ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
+        if (wifi | internet)
+            return true;
+        return false;
+    }
 
 }
