@@ -82,14 +82,6 @@ public class PaymentCompl implements PaymentPresenter {
         CallServer.getHttpclient().add(context, "", 0, request, dosweptPay, false, true);
     }
 
-    @Override
-    public void doSweptCheckOrder(Context context, String out_trade_no) {
-        Request<String> request = NoHttp.createStringRequest(Config.payUrl, RequestMethod.POST);
-        request.setDefineRequestBodyForXML(Parmas.getQuery(context, out_trade_no));
-        CallServer.getHttpclient().add(context, "", 4, request, queryOrderCallback, false, true);
-
-    }
-
     HttpListener<String> dosweptPay = new HttpListener<String>() {
         @Override
         public void success(int what, Response<String> response) {
@@ -125,6 +117,7 @@ public class PaymentCompl implements PaymentPresenter {
                     map.put("time_end", time_end);
                     map.put("transaction_id", transaction_id);
                     map.put("cashier", Utils.fenToYuan(total_fee));
+
                     String result = XMlUtils.changeMapToXml(map);
 
 
@@ -250,6 +243,16 @@ public class PaymentCompl implements PaymentPresenter {
             message.obj = "网络异常,请检查网络！";
             handler.sendMessage(message);
         }
+    }
+
+
+
+    @Override
+    public void doSweptCheckOrder(Context context, String out_trade_no) {
+        Request<String> request = NoHttp.createStringRequest(Config.payUrl, RequestMethod.POST);
+        request.setDefineRequestBodyForXML(Parmas.getQuery(context, out_trade_no));
+        CallServer.getHttpclient().add(context, "", 4, request, queryOrderCallback, false, true);
+
     }
 
 

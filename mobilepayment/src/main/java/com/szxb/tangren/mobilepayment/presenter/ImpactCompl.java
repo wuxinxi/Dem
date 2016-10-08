@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Created by Administrator on 2016/9/30 0030.
  */
-public class ImpactCompl implements ImpactPresetner {
+public class ImpactCompl implements ImpactPresenter {
 
     private ImpactView view;
 

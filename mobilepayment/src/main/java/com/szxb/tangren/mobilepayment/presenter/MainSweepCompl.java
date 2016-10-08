@@ -35,7 +35,7 @@ public class MainSweepCompl implements MainSweepPresenter {
 
     private Integer polling_times = 0;// 轮询次数
 
-    public int isPay = 0;// 是否已经完成支付
+    public static int isPay = 0;// 是否已经完成支付
 
     public boolean isshowDown = false;//是否结束循环
 
@@ -61,6 +61,7 @@ public class MainSweepCompl implements MainSweepPresenter {
             super.handleMessage(msg);
             switch (msg.what) {
                 case 1:
+                    isPay = 1;
                     view.onResult(400, msg.obj.toString());
                     break;
 
@@ -224,9 +225,13 @@ public class MainSweepCompl implements MainSweepPresenter {
                             isPay = 0;
                     }
                 } else {
-                    message.what = 1;
-                    message.obj = response.get();
-                    handler.sendMessage(message);
+                    if ((xml.get("err_code") != null && xml.get("err_code").equals("ACQ.TRADE_NOT_EXIST"))) {
+                        isPay = 0;
+                    } else {
+                        message.what = 1;
+                        message.obj = response.get();
+                        handler.sendMessage(message);
+                    }
                 }
             }
 

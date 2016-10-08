@@ -162,7 +162,6 @@ public class MainSweepActivity extends AppCompatActivity implements MainSweepVie
 
     @Override
     public void onResult(int code, String result) {
-
         if (code == 100) {
             Map<String, String> xml = XMlUtils.decodeXml(result);
 
